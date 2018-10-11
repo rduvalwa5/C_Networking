@@ -1,2 +1,105 @@
 Tutorial:  https://www.codeproject.com/Articles/586000/Networking-and-Socket-programming-tutorial-in-C
 
+Configure Socket
+
+Things that need to be initialized are listed as follows:
+	1) Using TCP or UDP
+	2) Additional protocol
+	3) Permit the incoming IP address
+	4) Assign the port used
+
+At the beginning, 
+
+	a.  a socket function needs to be declared to get the socket descriptor.
+		int socket(int domain, int type, int protocol)
+		1.  Domain	
+			- AF_UNIX - connect inside same machine 
+			- AF_INET – connect with different machine
+		2.	Type	
+			- SOCK_STREAM – TCP connection 
+			- SOCK_DGRAM – UDP connection
+		3.	Protocol	
+			Define here when there is any additional protocol. Otherwise, define it as 0
+
+	b.	Next, decide which struct needs to be used based on what domain is used above.
+			1. AF_UNIX	
+					struct sockaddr_un
+					  {
+					    sa_family_t sun_family ;
+					    char sun_path[];
+					  };
+			  Use struct sockaddr_un if you are using AF_UNIX on your domain. 
+			  It is required to include <sys/un.h>
+			2.	AF_INET
+					struct sockaddr_in
+					  {
+					    short int  sin_family ;
+					    int        sin_port;
+					    struct in_addr sin_addr;
+					  };
+				Use struct sockaddr_in if you are using AF_INT on your domain.
+
+In this article, I will explain sockadd_in that showed in the code above.
+		1.	serv_addr.sin_family = AF_INET;					Define the domain used
+		2.	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);	Permit any incoming IP address by declaring INADDR_ANY
+		3.	serv_addr.sin_port = htons(5000);				Declare port 5000 to be used.
+
+C1246895-osx:~ rduvalwa2$ sudo netstat -a | grep 50005 
+tcp4       0      0  *.50005                *.*                    LISTEN     
+C1246895-osx:~ rduvalwa2$ lsof | grep 50005
+UnixServe 1322 rduvalwa2    3u    IPv4 0xfe35e39b523ce757       0t0        TCP *:50005 (LISTEN)
+
+client side
+
+	1.  serv_addr.sin_port = htons(127.0.0.1) is declared in order to listen to the internal network.
+	2.	declare bind function. As flow chart, bind function must be declared on both server and client.
+
+bind function
+	server_socket & client_socket	Put socket description retrieved on the top
+	address	Put struct sockaddr_in into it as domain is AF_INET. If your domain is AF_UNIX, try and put struct sockaddr_un here.
+	address_len	Put the length of the address
+
+Server and client will start interacting with each other after the bind function and it is the most important session. 
+From what flow chart shows, listen, accept, connect, three functions play very important roles.
+
+Imagine that server looks like an ATM, and only one person can be used the ATM. So, what happens if there are 2 or more people that come at one
+time? The answer is simple, lining up and wait for the front people to finish using with ATM. It is exactly the same as what is happening in 
+the server.
+
+Listen function acts as a waiting room, asking the traffic wait on the waiting room. Accept function acts as the person who is asking the 
+traffic waiting inside the waiting room to be ready for the meeting between server. Last, connect function acts as the person who wants to 
+carry out some work with the server.
+
+listen function
+	server_socket	Put socket description retrieved on the top
+	backlog	Define the maximum of awaiting request
+
+accept function
+	server_socket	Put socket description retrieved on the top
+	client_address	Put null here if there is no special request to specify address.
+	address_len	Put null here if second parameter is null
+	return	Return information of client socket description. Use it for interaction between client and server.
+
+connect function
+	client_socket	Put socket description retrieved on the top
+	address	Put the struct sockaddr defined on the top
+	address_len	Put the length of the address
+
+Finally, after the request is accepted, what should server and client do is send and read data. 
+It is the most simple part in this entire article. read function is used to read the buffer data and write function is used to send the data. 
+That’s all.
+
+read function
+	socket_description	Put server or client socket description depending on reading data from server or client
+	read buffer	Content of the data retrieved
+	read buffer length	Length of the output string
+
+write function
+	socket_description	Put server or client socket description depending on sending data to server or client
+	write buffer	Data to be sent
+	write buffer length	Length of the output string
+
+Personal Comment
+This article was published on 2013/5/1 and I was still new to networking programming at that time. Maybe there is some point that 
+I am not making clear enough. I have tried my best to present all my knowledge to this article. Hope you can get the good basic 
+beginning over here. Thank you!

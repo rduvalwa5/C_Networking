@@ -27,13 +27,25 @@ int main(void)
   char sendBuff[1025];
   int numrv;
 
+/*	a.  a socket function needs to be declared to get the socket descriptor.
+		int socket(int domain, int type, int protocol) */
+
   listenfd = socket(AF_INET, SOCK_STREAM, 0);
   printf("socket retrieve success\n");
   printf("Listening on port %s\n", "50005");
 
   memset(&serv_addr, '0', sizeof(serv_addr));
   memset(sendBuff, '0', sizeof(sendBuff));
-
+/*decide which struct needs to be used based on what domain is used above.
+  	2.	AF_INET
+			struct sockaddr_in
+			{
+				short int  sin_family ;
+				int        sin_port;
+				struct in_addr sin_addr;
+			};
+		Use struct sockaddr_in if you are using AF_INT on your domain.
+ */
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   serv_addr.sin_port = htons(50005);
