@@ -103,3 +103,27 @@ Personal Comment
 This article was published on 2013/5/1 and I was still new to networking programming at that time. Maybe there is some point that 
 I am not making clear enough. I have tried my best to present all my knowledge to this article. Hope you can get the good basic 
 beginning over here. Thank you!
+
+----------------------------------------
+Windows TCP IP socket code:
+----------------------------------------
+/*
+ * https://www.binarytides.com/code-tcp-socket-server-winsock/
+ *   Bind socket to port 8888 on localhost
+ *
+ *   In Eclipse go to project > properties > MingW Linker C++ > Libraries
+ *   add ws2_32
+ *   this puts this library in the linker path
+ *   in winsock.h
+ *    (gs)etsockopts exported from the WinSock 2 lib, ws2_32.dll.
+ *    Refer ws2tcpip.h.
+ *
+ *    g++ -o WinEchoServer.exe echoServer.o -lws2_32
+ *
+ * C:\Users\rduvalwa2\Cworkspace\WinEchoclient>tasklist /fi "imagename eq WinEchoServer.exe"
+ *
+ * Image Name                     PID Session Name        Session#    Mem Usage
+ * ========================= ======== ================ =========== ============
+ * WinEchoServer.exe             3848 Console                    1      2,204 K
+ *
+ */
